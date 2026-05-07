@@ -118,57 +118,61 @@
     </div>
 
     <script>
-      const API = "https://red-phantom-main-back.vercel.app/api/users";
+const API = "https://red-phantom-main-back.vercel.app/api/users";
 
-      const user = JSON.parse(localStorage.getItem("user"));
+const user = JSON.parse(localStorage.getItem("user"));
 
-      if (user) {
-        userName.value = user.userName || "";
+if (user) {
+  userName.value = user.userName || "";
 
-        profilePreview.src =
-          user.profileImage ||
-          "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-      }
+  profilePreview.src =
+    user.profileImage ||
+    "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+}
 
-      profileImage.addEventListener("change", (e) => {
-        const file = e.target.files[0];
+profileImage.addEventListener("change", (e) => {
+  const file = e.target.files[0];
 
-        if (file) {
-          profilePreview.src = URL.createObjectURL(file);
-        }
-      });
+  if (file) {
+    profilePreview.src = URL.createObjectURL(file);
+  }
+});
 
-      async function updateProfile() {
-        try {
-          const formData = new FormData();
+async function updateProfile() {
+  const token = localStorage.getItem("token");
 
-          formData.append("userName", userName.value);
+  if (!token) {
+    alert("Please login again");
+    location.href = "login.html";
+    return;
+  }
 
-          if (profileImage.files[0]) {
-            formData.append("image", profileImage.files[0]);
-          }
+  const formData = new FormData();
+  formData.append("userName", userName.value);
 
-          const response = await fetch(`${API}/update-profile`, {
-            method: "PATCH",
-            headers: {
-              token: localStorage.getItem("token"),
-            },
-            body: formData,
-          });
+  if (profileImage.files[0]) {
+    formData.append("image", profileImage.files[0]);
+  }
 
-          const data = await response.json();
+  const response = await fetch(`${API}/update-profile`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
 
-          if (data.message === "Done") {
-            localStorage.setItem("user", JSON.stringify(data.user));
+  const data = await response.json();
 
-            alert("Profile Updated Successfully");
-          } else {
-            alert(data.message);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
+  if (!response.ok) {
+    alert(data.message);
+    return;
+  }
+
+  localStorage.setItem("user", JSON.stringify(data.user));
+
+  alert("Profile Updated Successfully");
+}
     </script>
   </body>
 </html>
