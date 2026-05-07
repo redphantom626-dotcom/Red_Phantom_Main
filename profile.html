@@ -88,10 +88,7 @@
       <h1>Update Profile</h1>
 
       <div class="image-box">
-        <img
-          id="profilePreview"
-          src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-        />
+        <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" />
       </div>
 
       <div class="form-group">
@@ -108,22 +105,20 @@
     </div>
 
     <script>
-      const API = "https://red-phantom-main-back.vercel.app/api/users";
+      const API = "https://red-phantom-auth-back-delta.vercel.app/api/users";
 
       window.addEventListener("load", () => {
         const user = JSON.parse(localStorage.getItem("user"));
         const token = localStorage.getItem("token");
 
-        if (!token) {
+        if (!token || token === "undefined") {
           location.href = "https://red-phantom-auth-one.vercel.app/auth/login.html";
           return;
         }
 
         if (user) {
           userName.value = user.userName || "";
-          profilePreview.src =
-            user.profileImage ||
-            "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+          profilePreview.src = user.profileImage || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
         }
       });
 
@@ -137,7 +132,7 @@
       async function updateProfile() {
         const token = localStorage.getItem("token");
 
-        if (!token) {
+        if (!token || token === "undefined") {
           location.href = "https://red-phantom-auth-one.vercel.app/auth/login.html";
           return;
         }
@@ -165,8 +160,6 @@
         }
 
         localStorage.setItem("user", JSON.stringify(data.user));
-
-        alert("Profile Updated Successfully");
 
         location.href = "https://red-phantom-main-mu.vercel.app/main.html";
       }
