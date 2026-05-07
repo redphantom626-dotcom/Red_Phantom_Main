@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
-
     <style>
       * {
         margin: 0;
@@ -70,10 +69,6 @@
         outline: none;
       }
 
-      .form-group input:focus {
-        border-color: #ff003c;
-      }
-
       button {
         width: 100%;
         padding: 15px;
@@ -84,11 +79,6 @@
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
-        transition: 0.3s;
-      }
-
-      button:hover {
-        background: #d10031;
       }
     </style>
   </head>
@@ -106,7 +96,7 @@
 
       <div class="form-group">
         <label>User Name</label>
-        <input type="text" id="userName" placeholder="Enter user name" />
+        <input type="text" id="userName" />
       </div>
 
       <div class="form-group">
@@ -116,6 +106,7 @@
 
       <button onclick="updateProfile()">Update Profile</button>
     </div>
+
     <script>
       const API = "https://red-phantom-main-back.vercel.app/api/users";
 
@@ -124,13 +115,12 @@
         const token = localStorage.getItem("token");
 
         if (!token) {
-          location.href = "https://red-phantom-auth-one.vercel.app/login.html";
+          location.href = "https://red-phantom-auth-one.vercel.app/auth/login.html";
           return;
         }
 
         if (user) {
           userName.value = user.userName || "";
-
           profilePreview.src =
             user.profileImage ||
             "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -148,7 +138,7 @@
         const token = localStorage.getItem("token");
 
         if (!token) {
-          location.href = "https://red-phantom-auth-one.vercel.app/login.html";
+          location.href = "https://red-phantom-auth-one.vercel.app/auth/login.html";
           return;
         }
 
@@ -159,17 +149,17 @@
           formData.append("image", profileImage.files[0]);
         }
 
-        const response = await fetch(`${API}/update-profile`, {
+        const res = await fetch(`${API}/update-profile`, {
           method: "PATCH",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: formData,
+          body: formData
         });
 
-        const data = await response.json();
+        const data = await res.json();
 
-        if (!response.ok) {
+        if (!res.ok) {
           alert(data.message);
           return;
         }
