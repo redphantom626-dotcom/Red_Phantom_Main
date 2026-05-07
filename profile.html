@@ -116,68 +116,72 @@
 
       <button onclick="updateProfile()">Update Profile</button>
     </div>
+    <script>
+      const API = "https://red-phantom-main-back.vercel.app/api/users";
 
-<script>
-const API = "https://red-phantom-main-back.vercel.app/api/users";
+      window.addEventListener("load", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = localStorage.getItem("token");
 
-const user = JSON.parse(localStorage.getItem("user"));
-const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Please login again");
+          location.href = "login.html";
+          return;
+        }
 
-if (!token) {
-  alert("Please login again");
-  location.href = "login.html";
-}
+        if (user) {
+          userName.value = user.userName || "";
 
-if (user) {
-  userName.value = user.userName || "";
+          profilePreview.src =
+            user.profileImage ||
+            "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        }
+      });
 
-  profilePreview.src =
-    user.profileImage ||
-    "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-}
+      profileImage.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          profilePreview.src = URL.createObjectURL(file);
+        }
+      });
 
-profileImage.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    profilePreview.src = URL.createObjectURL(file);
-  }
-});
+      async function updateProfile() {
+        const token = localStorage.getItem("token");
 
-async function updateProfile() {
-  if (!token) {
-    alert("Please login again");
-    location.href = "login.html";
-    return;
-  }
+        if (!token) {
+          alert("Please login again");
+          location.href = "login.html";
+          return;
+        }
 
-  const formData = new FormData();
-  formData.append("userName", userName.value);
+        const formData = new FormData();
+        formData.append("userName", userName.value);
 
-  if (profileImage.files[0]) {
-    formData.append("image", profileImage.files[0]);
-  }
+        if (profileImage.files[0]) {
+          formData.append("image", profileImage.files[0]);
+        }
 
-  const response = await fetch(`${API}/update-profile`, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  });
+        const response = await fetch(`${API}/update-profile`, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
 
-  const data = await response.json();
+        const data = await response.json();
 
-  if (!response.ok) {
-    alert(data.message);
-    return;
-  }
+        if (!response.ok) {
+          alert(data.message);
+          return;
+        }
 
-  localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(data.user));
 
-  alert("Profile Updated Successfully");
+        alert("Profile Updated Successfully");
 
-  location.href = "https://red-phantom-main-mu.vercel.app/main.html";
-}
-</script>
+        location.href = "https://red-phantom-main-mu.vercel.app/main.html";
+      }
+    </script>
   </body>
 </html>
