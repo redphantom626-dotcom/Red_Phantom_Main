@@ -117,10 +117,16 @@
       <button onclick="updateProfile()">Update Profile</button>
     </div>
 
-    <script>
+<script>
 const API = "https://red-phantom-main-back.vercel.app/api/users";
 
 const user = JSON.parse(localStorage.getItem("user"));
+const token = localStorage.getItem("token");
+
+if (!token) {
+  alert("Please login again");
+  location.href = "login.html";
+}
 
 if (user) {
   userName.value = user.userName || "";
@@ -132,15 +138,12 @@ if (user) {
 
 profileImage.addEventListener("change", (e) => {
   const file = e.target.files[0];
-
   if (file) {
     profilePreview.src = URL.createObjectURL(file);
   }
 });
 
 async function updateProfile() {
-  const token = localStorage.getItem("token");
-
   if (!token) {
     alert("Please login again");
     location.href = "login.html";
@@ -172,7 +175,9 @@ async function updateProfile() {
   localStorage.setItem("user", JSON.stringify(data.user));
 
   alert("Profile Updated Successfully");
+
+  location.href = "https://red-phantom-main-mu.vercel.app/main.html";
 }
-    </script>
+</script>
   </body>
 </html>
