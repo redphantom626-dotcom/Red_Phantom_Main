@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: "Segoe UI", sans-serif;
+        background: #070b17;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
+
+      .profile-container {
+        width: 420px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 0, 60, 0.2);
+        border-radius: 20px;
+        padding: 35px;
+        backdrop-filter: blur(12px);
+      }
+
+      .profile-container h1 {
+        text-align: center;
+        color: #ff003c;
+        margin-bottom: 30px;
+      }
+
+      .image-box {
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .image-box img {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #ff003c;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        background: #111827;
+        color: white;
+        outline: none;
+      }
+
+      .form-group input:focus {
+        border-color: #ff003c;
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        background: #ff003c;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #d10031;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="profile-container">
+      <h1>Update Profile</h1>
+
+      <div class="image-box">
+        <img
+          id="profilePreview"
+          src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>User Name</label>
+        <input type="text" id="userName" placeholder="Enter user name" />
+      </div>
+
+      <div class="form-group">
+        <label>Profile Image</label>
+        <input type="file" id="profileImage" />
+      </div>
+
+      <button onclick="updateProfile()">Update Profile</button>
+    </div>
+
+    <script>
+      const API = "https://red-phantom-main-back.vercel.app/api/users";
+
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (user) {
+        userName.value = user.userName || "";
+
+        profilePreview.src =
+          user.profileImage ||
+          "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      }
+
+      profileImage.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+          profilePreview.src = URL.createObjectURL(file);
+        }
+      });
+
+      async function updateProfile() {
+        try {
+          const formData = new FormData();
+
+          formData.append("userName", userName.value);
+
+          if (profileImage.files[0]) {
+            formData.append("image", profileImage.files[0]);
+          }
+
+          const response = await fetch(`${API}/update-profile`, {
+            method: "PATCH",
+            headers: {
+              token: localStorage.getItem("token"),
+            },
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.message === "Done") {
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            alert("Profile Updated Successfully");
+          } else {
+            alert(data.message);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    </script>
+  </body>
+</html>
